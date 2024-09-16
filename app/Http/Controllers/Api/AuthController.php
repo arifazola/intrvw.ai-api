@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\DB;
+use Libraries;
+use Libraries\Encryptor;
 
 class AuthController extends Controller
 {
@@ -79,4 +81,17 @@ class AuthController extends Controller
             'message' => 'logout success'
         ]);
     }
+
+    public function testEncrypt(Request $request){
+        $encryptedText = $request->text;
+        $encryptor = new Encryptor();
+        $decryptedText = $encryptor->decrypt($encryptedText, "8Q5cRCqsJ22r8Iw7pgZ2hlzpv2UaStW1");
+
+        return response()->json([
+            'text' => $request->text,
+            'decrypted_text' => $decryptedText
+        ]);
+    }
+
+    
 }
