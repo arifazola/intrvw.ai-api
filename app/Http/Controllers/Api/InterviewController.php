@@ -26,17 +26,23 @@ class InterviewController extends Controller
 
         $interviewResultModel = new InterviewResults;
 
-        $interviewResultModel->user_id = 12;
-        $interviewResultModel->score = 30;
+        $interviewResultModel->user_id = $request->user()->id;
+        $interviewResultModel->score = $request->score;
         $interviewResultModel->feedback = $decryptedText;
         $interviewResultModel->summary = "Keep it up";
 
         $save = $interviewResultModel->save();
 
-        
+        if($save){
+            return response()->json([
+                "message" => "Interview result is saved"
+            ]);
+        }
+
         return response()->json([
-            "status" => $save
-        ]);
+            "message" => "An unknown error has occured. Please try again"
+        ], 500);
+        
     }
 
     function decrypt($string, $key) {
@@ -54,17 +60,32 @@ class InterviewController extends Controller
         // Extract the ciphertext (remaining bytes)
         $ciphertext = substr($c, $ivlen);
 
-        // Debug: Output IV and ciphertext in hex format to check if they are properly extracted
-        echo "IV (Hex): " . bin2hex($iv) . "\n";
-        echo "Ciphertext (Hex): " . bin2hex($ciphertext) . "\n";
-
         // Perform the decryption
         $original_plaintext = openssl_decrypt($ciphertext, $cipher, $key, OPENSSL_RAW_DATA, $iv);
 
         if ($original_plaintext === false) {
-            echo "Decryption errorrr: " . openssl_error_string() . "\n";
+            return response()->json([
+                "message" => "We are unable to save your interview result. Please try again"
+            ], 500);
         }
 
         return $original_plaintext;
+    }
+
+    public function getInterviewResults(Request $request, string $email){
+        if($email != $request->user()->currentAccessToken()->tokenable->email){
+            return response()->json([
+                'message' => 'Unauthenticated'
+            ], 401);
+        }
+
+        $data = InterviewResults::where('user_id', $request->user()->id)->take(3)->get();
+
+        $serializedData = json_encode($data);
+
+        return response()->json([
+            // 'message' => "Fetched interview results successfully",
+            'results' => (object)$data
+        ]);
     }
 }
