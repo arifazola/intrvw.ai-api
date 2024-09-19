@@ -85,7 +85,7 @@ class InterviewController extends Controller
 
         return response()->json([
             // 'message' => "Fetched interview results successfully",
-            'results' => (object)$data
+            'results' => $data
         ]);
     }
 }

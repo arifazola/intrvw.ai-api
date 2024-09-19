@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('interview_results', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        //
+        Schema::table('interview_results', function (Blueprint $table) {
+            $table->text('interview_title');
         });
     }
 
@@ -22,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('interview_results');
+        //
     }
 };
