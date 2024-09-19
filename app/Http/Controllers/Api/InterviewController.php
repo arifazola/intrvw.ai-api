@@ -19,10 +19,14 @@ class InterviewController extends Controller
         }
 
         $encryptedText = $request->text;
+        $encryptedJobDetail = $request->jobDetail;
         // $encryptor = new Encryptor();
         $decryptedText = InterviewController::decrypt($encryptedText, "8Q5cRCqsJ22r8Iw7pgZ2hlzpv2UaStW1");
+        $decryptedJobDetail = InterviewController::decrypt($encryptedJobDetail, "8Q5cRCqsJ22r8Iw7pgZ2hlzpv2UaStW1");
 
         $interviewResultObj = json_decode($decryptedText); 
+
+        $jobDetailObj = json_decode($decryptedJobDetail);
 
         $interviewResultModel = new InterviewResults;
 
@@ -30,6 +34,7 @@ class InterviewController extends Controller
         $interviewResultModel->score = $request->score;
         $interviewResultModel->feedback = $decryptedText;
         $interviewResultModel->summary = "Keep it up";
+        $interviewResultModel->interview_title = $jobDetailObj->jobTitle;
 
         $save = $interviewResultModel->save();
 
