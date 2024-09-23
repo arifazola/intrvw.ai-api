@@ -75,6 +75,12 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        if($request->email != $request->user()->currentAccessToken()->tokenable->email){
+            return response()->json([
+                'message' => 'Unauthenticated'
+            ], 401);
+        }
+
         $user = User::where('email', $request->email)->firstOrFail();
         $user->tokens()->delete();
         return response()->json([
