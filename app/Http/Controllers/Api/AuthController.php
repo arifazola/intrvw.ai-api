@@ -56,12 +56,6 @@ class AuthController extends Controller
 
     public function processLogin(Request $request)
     {
-        // if (! Auth::attempt($request->only('email', 'password'))) {
-        //     return response()->json([
-        //         'message' => 'Unauthorized'
-        //     ], 401);
-        // }
-
         $user = User::where('email', $request->email)->firstOrFail();
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -87,17 +81,4 @@ class AuthController extends Controller
             'message' => 'logout success'
         ]);
     }
-
-    public function testEncrypt(Request $request){
-        $encryptedText = $request->text;
-        $encryptor = new Encryptor();
-        $decryptedText = $encryptor->decrypt($encryptedText, "8Q5cRCqsJ22r8Iw7pgZ2hlzpv2UaStW1");
-
-        return response()->json([
-            'text' => $request->text,
-            'decrypted_text' => $decryptedText
-        ]);
-    }
-
-    
 }
