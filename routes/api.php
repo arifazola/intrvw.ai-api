@@ -16,6 +16,7 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/interview-result', [\App\Http\Controllers\Api\InterviewController::class, 'saveInterviewResult'])->middleware('auth:sanctum');
 Route::get('/interview-results/{email}', [\App\Http\Controllers\Api\InterviewController::class, 'getInterviewResults'])->middleware('auth:sanctum');
+Route::get('/interview-result/{email}/{interviewId}', [\App\Http\Controllers\Api\InterviewController::class, 'getInterviewResult'])->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
