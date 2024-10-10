@@ -94,6 +94,23 @@ class InterviewController extends Controller
         ]);
     }
 
+    public function getInterviewResultsAll(Request $request, string $email){
+        if($email != $request->user()->currentAccessToken()->tokenable->email){
+            return response()->json([
+                'message' => 'Unauthenticated'
+            ], 401);
+        }
+
+        $data = InterviewResults::where('user_id', $request->user()->id)->get();
+
+        $serializedData = json_encode($data);
+
+        return response()->json([
+            // 'message' => "Fetched interview results successfully",
+            'results' => $data
+        ]);
+    }
+
     public function getInterviewResult(Request $request, String $email, String $interviewId){
         if($email != $request->user()->currentAccessToken()->tokenable->email){
             return response()->json([
