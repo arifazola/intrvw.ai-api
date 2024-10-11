@@ -94,14 +94,20 @@ class InterviewController extends Controller
         ]);
     }
 
-    public function getInterviewResultsAll(Request $request, string $email){
+    public function getInterviewResultsAll(Request $request, string $email, string $order){
         if($email != $request->user()->currentAccessToken()->tokenable->email){
             return response()->json([
                 'message' => 'Unauthenticated'
             ], 401);
         }
 
-        $data = InterviewResults::where('user_id', $request->user()->id)->get();
+        $orderMap = array(
+            "Recent" => ['id', 'DESC'],
+            "Oldest" => ['id', 'ASC'],
+            "Highest Score" => ['score', 'DESC']
+        );
+
+        $data = InterviewResults::where('user_id', $request->user()->id)->orderBy($orderMap[$order][0], $orderMap[$order][1])->get();
 
         $serializedData = json_encode($data);
 
