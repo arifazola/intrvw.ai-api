@@ -16,6 +16,7 @@ use Libraries\Encryptor;
 class AuthController extends Controller
 {
 
+    // Login using Gmail
     public function auth(Request $request){
         $user = DB::table("users")->where("email", $request->email)->first();
 
@@ -65,6 +66,41 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'Bearer'
         ]);
+    }
+
+    public function login(Request $request){
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
+ 
+        if (Auth::attempt($credentials)) {
+            $token = $request->user()->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'message' => 'Login success',
+                'access_token' => $token,
+                'token_type' => 'Bearer'
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Email or password is not correct',
+                'access_token' => "",
+                'token_type' => 'Bearer'
+            ], 401);
+        }
+
+        // $user = User::where('email', $request->email)->firstOrFail();
+
+        // print($user);
+
+        // $token = $user->createToken('auth_token')->plainTextToken;
+
+        // return response()->json([
+        //     'message' => 'Login success',
+        //     'access_token' => $token,
+        //     'token_type' => 'Bearer'
+        // ]);
     }
 
     public function logout(Request $request)
