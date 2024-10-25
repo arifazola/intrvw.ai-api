@@ -24,3 +24,6 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 
+Route::get('test-email', [\App\Http\Controllers\Api\AuthController::class, 'testEmail']);
+
+

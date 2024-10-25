@@ -12,6 +12,9 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\DB;
 use Libraries;
 use Libraries\Encryptor;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendEmail;
+use App\Helpers\OtpGenerator;
 
 class AuthController extends Controller
 {
@@ -23,11 +26,11 @@ class AuthController extends Controller
         if($user){
             return AuthController::processLogin($request);
         } else {
-            return AuthController::register($request);
+            return AuthController::processRegister($request);
         }
     }
 
-    public function register(Request $request){
+    public function processRegister(Request $request){
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|max:255|unique:users'
@@ -89,18 +92,45 @@ class AuthController extends Controller
                 'token_type' => 'Bearer'
             ], 401);
         }
+    }
 
-        // $user = User::where('email', $request->email)->firstOrFail();
+    public function register(Request $request){
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|max:255|unique:users',
+            'password' => 'required|string'
+        ]);
 
-        // print($user);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Signup failed',
+                'access_token' => null,
+                'token_type' => 'Bearer',
+                'data' => $validator->errors()
+            ], 401);
+        }
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->password,
+            'verified_at' => null,
+            'remaining_token' => 5
+        ]);
 
         // $token = $user->createToken('auth_token')->plainTextToken;
 
-        // return response()->json([
-        //     'message' => 'Login success',
-        //     'access_token' => $token,
-        //     'token_type' => 'Bearer'
-        // ]);
+        // event(new Registered($user));
+
+        $otpGenerator = new OtpGenerator();
+        $otp = $otpGenerator->generate();
+        AuthController::sendOtp($request->email, $otp);
+
+        return response()->json([
+            'message' => 'Signup success',
+            'access_token' => "",
+            'token_type' => 'Bearer'
+        ]);
     }
 
     public function logout(Request $request)
@@ -116,5 +146,9 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'logout success'
         ]);
+    }
+
+    public function sendOtp(string $to, int $otp){
+        Mail::to($to)->send(new SendEmail($otp));
     }
 }
