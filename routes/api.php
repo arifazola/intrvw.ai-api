@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [\App\Http\Controllers\Api\AuthController::class, 'register']);
 Route::post('/login', [\App\Http\Controllers\Api\AuthController::class, 'login']);
 Route::post('/auth', [\App\Http\Controllers\Api\AuthController::class, 'auth']);
+Route::get('/validate-otp/{email}/{otp}', [\App\Http\Controllers\Api\AuthController::class, 'validateOtp']);
 // Route::post('/test-encrypt', [\App\Http\Controllers\Api\AuthController::class, 'testEncrypt']);
 
 

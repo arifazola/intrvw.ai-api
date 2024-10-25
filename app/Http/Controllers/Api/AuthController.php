@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Otp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -33,7 +34,7 @@ class AuthController extends Controller
     public function processRegister(Request $request){
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|max:255|unique:users'
+            'email' => 'required|email:filter|max:255|unique:users'
         ]);
 
         if ($validator->fails()) {
@@ -97,7 +98,7 @@ class AuthController extends Controller
     public function register(Request $request){
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|max:255|unique:users',
+            'email' => 'required|email:filter|max:255|unique:users',
             'password' => 'required|string'
         ]);
 
@@ -118,12 +119,21 @@ class AuthController extends Controller
             'remaining_token' => 5
         ]);
 
+        
+
         // $token = $user->createToken('auth_token')->plainTextToken;
 
         // event(new Registered($user));
 
         $otpGenerator = new OtpGenerator();
         $otp = $otpGenerator->generate();
+        $saveOtp = Otp::create([
+            'email' => $request->email,
+            'otp' => $otp,
+            'valid_until' => date("Y-m-d H:i:s"),
+            'is_used' => false
+        ]);
+
         AuthController::sendOtp($request->email, $otp);
 
         return response()->json([
@@ -145,6 +155,36 @@ class AuthController extends Controller
         $user->tokens()->delete();
         return response()->json([
             'message' => 'logout success'
+        ]);
+    }
+
+    public function validateOtp(Request $request, string $email, string $otp){
+        // if($email != $request->user()->currentAccessToken()->tokenable->email){
+        //     return response()->json([
+        //         'message' => 'Unauthenticated'
+        //     ], 401);
+        // }
+
+        $otpFromDb = Otp::where('email', $request->email)->firstOrFail();
+
+        if($otp != $otpFromDb->otp){
+            return response()->json([
+                'message' => 'OTP Invalid',
+                'access_token' => "",
+                'token_type' => 'Bearer'
+            ], 401);
+        }
+
+        $updateUser = DB::table('users')->where('email', $email)->update(['email_verified_at' => date("Y-m-d H:i:s")]);
+
+        $user = User::where('email', $email)->firstOrFail();
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'OTP validated',
+            'access_token' => $token,
+            'token_type' => 'Bearer'
         ]);
     }
 
