@@ -46,9 +46,9 @@ class InterviewController extends Controller
     
             
             $save = $interviewResultModel->save();
-            throw new Exception('Error');
+            
             $user->save();
-
+            throw new Exception('Error');
             DB::commit();
 
             return response()->json([
