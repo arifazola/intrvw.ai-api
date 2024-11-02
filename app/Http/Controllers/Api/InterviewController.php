@@ -21,37 +21,38 @@ class InterviewController extends Controller
         }
 
         try{
-            DB::transaction(function() {
-                $encryptedText = $request->text;
-                $encryptedJobDetail = $request->jobDetail;
-                // $encryptor = new Encryptor();
-                $decryptedText = InterviewController::decrypt($encryptedText, "8Q5cRCqsJ22r8Iw7pgZ2hlzpv2UaStW1");
-                $decryptedJobDetail = InterviewController::decrypt($encryptedJobDetail, "8Q5cRCqsJ22r8Iw7pgZ2hlzpv2UaStW1");
-        
-                $interviewResultObj = json_decode($decryptedText); 
-        
-                $jobDetailObj = json_decode($decryptedJobDetail);
-        
-                $interviewResultModel = new InterviewResults;
-        
-                $interviewResultModel->score = $request->score;
-                $interviewResultModel->user_id = $request->user()->id;
-                $interviewResultModel->feedback = $decryptedText;
-                $interviewResultModel->summary = "Keep it up";
-                $interviewResultModel->interview_title = $jobDetailObj->jobTitle;
+            DB::beginTransaction();
+            $encryptedText = $request->text;
+            $encryptedJobDetail = $request->jobDetail;
+            // $encryptor = new Encryptor();
+            $decryptedText = InterviewController::decrypt($encryptedText, "8Q5cRCqsJ22r8Iw7pgZ2hlzpv2UaStW1");
+            $decryptedJobDetail = InterviewController::decrypt($encryptedJobDetail, "8Q5cRCqsJ22r8Iw7pgZ2hlzpv2UaStW1");
+    
+            $interviewResultObj = json_decode($decryptedText); 
+    
+            $jobDetailObj = json_decode($decryptedJobDetail);
+    
+            $interviewResultModel = new InterviewResults;
+    
+            $interviewResultModel->score = $request->score;
+            $interviewResultModel->user_id = $request->user()->id;
+            $interviewResultModel->feedback = $decryptedText;
+            $interviewResultModel->summary = "Keep it up";
+            $interviewResultModel->interview_title = $jobDetailObj->jobTitle;
 
-                $user = User::where('email', $request->email)->firstOrFail();
-                $currentRemainingToken = $user->remaining_token;
-                $user->remaining_token = $currentRemainingToken - 1;
-        
-                
-                $save = $interviewResultModel->save();
-                $user->save();
+            $user = User::where('email', $request->email)->firstOrFail();
+            $currentRemainingToken = $user->remaining_token;
+            $user->remaining_token = $currentRemainingToken - 1;
+    
+            
+            $save = $interviewResultModel->save();
+            $user->save();
 
-                return response()->json([
-                    "message" => "Interview result is saved"
-                ]);
-            });
+            DB::commit();
+
+            return response()->json([
+                "message" => "Interview result is saved"
+            ]);
     
             // if($save){
             //     return response()->json([
@@ -59,6 +60,7 @@ class InterviewController extends Controller
             //     ]);
             // }
         }catch(Exception $e){
+            DB::rollBack();
             return response()->json([
                 "message" => "An unknown error has occured. Please try again"
             ], 500);
