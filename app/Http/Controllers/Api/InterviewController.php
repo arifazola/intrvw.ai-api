@@ -42,24 +42,19 @@ class InterviewController extends Controller
 
             $user = User::where('email', $request->email)->firstOrFail();
             $currentRemainingToken = $user->remaining_token;
-            $user->remaining_token = $currentRemainingToken - 1;
+            $updatedRemaingToken = $currentRemainingToken - 1;
+            $user->remaining_token = $updatedRemaingToken;
     
             
             $save = $interviewResultModel->save();
             
             $user->save();
-            throw new Exception('Error');
             DB::commit();
 
             return response()->json([
-                "message" => "Interview result is saved"
+                "message" => "Interview result is saved",
+                "remaining_token" => $updatedRemaingToken
             ]);
-    
-            // if($save){
-            //     return response()->json([
-            //         "message" => "Interview result is saved"
-            //     ]);
-            // }
         }catch(Exception $e){
             DB::rollBack();
             return response()->json([
@@ -107,9 +102,12 @@ class InterviewController extends Controller
 
         $serializedData = json_encode($data);
 
+        $user = User::where('email', $request->email)->firstOrFail();
+
         return response()->json([
             // 'message' => "Fetched interview results successfully",
-            'results' => $data
+            'results' => $data,
+            "remaining_token" => (int)$user->remaining_token
         ]);
     }
 
