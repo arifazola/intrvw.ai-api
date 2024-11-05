@@ -184,28 +184,27 @@ class AuthController extends Controller
     }
 
     public function getCurrentRemainingToken(Request $request, string $email){
-        print_r($request->user()->currentAccessToken());
 
-        // if($email != $request->user()->currentAccessToken()->tokenable->email){
-        //     return response()->json([
-        //         'message' => 'Unauthenticated'
-        //     ], 401);
-        // }
+        if($email != $request->user()->currentAccessToken()->tokenable->email){
+            return response()->json([
+                'message' => 'Unauthenticated'
+            ], 401);
+        }
 
-        // try{
-        //     $user = User::where('email', $email)->firstOrFail();
+        try{
+            $user = User::where('email', $email)->firstOrFail();
 
-        //     $remainingToken = $user->remaining_token;
+            $remainingToken = $user->remaining_token;
     
-        //     return response()->json([
-        //         'message' => 'Success',
-        //         'remaining_token' => $remainingToken
-        //     ]);
-        // } catch(Exception $e){
-        //     return response()->json([
-        //         'message' => 'Error getting remaining token'
-        //     ], 401);
-        // }
+            return response()->json([
+                'message' => 'Success',
+                'remaining_token' => $remainingToken
+            ]);
+        } catch(Exception $e){
+            return response()->json([
+                'message' => 'Error getting remaining token'
+            ], 401);
+        }
 
         
     }
