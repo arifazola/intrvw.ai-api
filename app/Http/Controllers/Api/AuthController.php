@@ -160,12 +160,6 @@ class AuthController extends Controller
     }
 
     public function validateOtp(Request $request, string $email, string $otp){
-        // if($email != $request->user()->currentAccessToken()->tokenable->email){
-        //     return response()->json([
-        //         'message' => 'Unauthenticated'
-        //     ], 401);
-        // }
-
         $otpFromDb = Otp::where('email', $request->email)->firstOrFail();
 
         if($otp != $otpFromDb->otp){
@@ -187,6 +181,31 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'Bearer'
         ]);
+    }
+
+    public function getCurrentRemainingToken(Request $request, string $email){
+        if($email != $request->user()->currentAccessToken()->tokenable->email){
+            return response()->json([
+                'message' => 'Unauthenticated'
+            ], 401);
+        }
+
+        try{
+            $user = User::where('email', $email)->firstOrFail();
+
+            $remainingToken = $user->remaining_token;
+    
+            return response()->json([
+                'message' => 'Success',
+                'remaining_token' => $remainingToken
+            ]);
+        } catch(Exception $e){
+            return response()->json([
+                'message' => 'Error getting remaining token'
+            ], 401);
+        }
+
+        
     }
 
     public function sendOtp(string $to, int $otp){
