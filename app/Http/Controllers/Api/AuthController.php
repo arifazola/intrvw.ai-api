@@ -184,7 +184,7 @@ class AuthController extends Controller
     }
 
     public function getCurrentRemainingToken(Request $request, string $email){
-        print_r($request);
+        print_r($request->user());
 
         if($email != $request->user()->currentAccessToken()->tokenable->email){
             return response()->json([
