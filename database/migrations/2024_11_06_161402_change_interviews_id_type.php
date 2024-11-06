@@ -14,6 +14,7 @@ return new class extends Migration
         //
         Schema::table('interviews', function (Blueprint $table) {
             // $table->integer('votes')->unsigned()->default(1)->comment('my comment')->change();
+            $table->dropPrimary('interviews_id_primary');
             $table->string('id', 50)->primary()->change();
         });
     }
