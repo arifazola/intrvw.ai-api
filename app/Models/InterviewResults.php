@@ -30,5 +30,9 @@ class InterviewResults extends Model
      */
     public $timestamps = false;
 
+    protected $casts = [
+        'id' => 'string',
+    ];
+
 
 }
