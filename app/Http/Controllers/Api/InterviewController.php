@@ -101,8 +101,6 @@ class InterviewController extends Controller
 
         $data = InterviewResults::where('user_id', $request->user()->id)->orderBy("id", "DESC")->take(3)->get();
 
-        print_r($data);
-
         $serializedData = json_encode($data);
 
         $user = User::where('email', $request->email)->firstOrFail();
