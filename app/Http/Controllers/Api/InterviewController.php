@@ -34,6 +34,7 @@ class InterviewController extends Controller
     
             $interviewResultModel = new InterviewResults;
     
+            $interviewResultModel->id = $request->id;
             $interviewResultModel->score = $request->score;
             $interviewResultModel->user_id = $request->user()->id;
             $interviewResultModel->feedback = $decryptedText;
