@@ -45,7 +45,8 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' =>md5("fjndskelrjkfdmn,cm,nekldfkslrwjerwbndfskldjklerwjklebjkfjldfskerwklfbknds,#%$^%&#$%$%^%#$@$%#$$"),
-            'email_verified_at' => date("Y-m-d H:i:s")
+            'email_verified_at' => date("Y-m-d H:i:s"),
+            'remaining_token' => 2
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -117,7 +118,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => $request->password,
             'verified_at' => null,
-            'remaining_token' => 5
+            'remaining_token' => 2
         ]);
 
         
