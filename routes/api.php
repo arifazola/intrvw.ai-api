@@ -25,6 +25,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [\App\Http\Controllers\Api\AuthController::class, 'logout']);
 });
 
+Route::post("/user/renew-token", [\App\Http\Controllers\Api\UserController::class, 'renewUserInterviewToken'])->middleware('auth:sanctum');
+
 
 Route::get('test-email', [\App\Http\Controllers\Api\AuthController::class, 'testEmail']);
 
