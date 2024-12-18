@@ -16,6 +16,7 @@ use Libraries\Encryptor;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendEmail;
 use App\Helpers\OtpGenerator;
+Use Exception;
 
 class AuthController extends Controller
 {
