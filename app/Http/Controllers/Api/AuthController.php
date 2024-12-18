@@ -147,22 +147,31 @@ class AuthController extends Controller
     }
 
     public function requestOtpForResetPassword(Request $request){
-        $otpGenerator = new OtpGenerator();
-        $otp = $otpGenerator->generate();
-        $saveOtp = Otp::create([
-            'email' => $request->email,
-            'otp' => $otp,
-            'valid_until' => date("Y-m-d H:i:s"),
-            'is_used' => false,
-            'otp_for' => 'reset_password'
-        ]);
-        AuthController::sendOtp($request->email, $otp);
+        try{
+            $otpGenerator = new OtpGenerator();
+            $otp = $otpGenerator->generate();
+            $saveOtp = Otp::create([
+                'email' => $request->email,
+                'otp' => $otp,
+                'valid_until' => date("Y-m-d H:i:s"),
+                'is_used' => false,
+                'otp_for' => 'reset_password'
+            ]);
+            AuthController::sendOtp($request->email, $otp);
 
-        return response()->json([
-            'message' => 'OTP for reset password has been sent to your email',
-            'access_token' => "",
-            'token_type' => 'Bearer'
-        ]);
+            return response()->json([
+                'message' => 'OTP for reset password has been sent to your email',
+                'access_token' => "",
+                'token_type' => 'Bearer'
+            ]);
+        }catch(Exception $e){
+            return response()->json([
+                'message' => 'Something went wrong when requesting OTP. Please try again',
+                'access_token' => "",
+                'token_type' => 'Bearer'
+            ]);
+        }
+        
     }
 
     public function logout(Request $request)
