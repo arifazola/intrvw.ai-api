@@ -149,7 +149,6 @@ class AuthController extends Controller
 
     public function requestOtpForResetPassword(Request $request){
         try{
-            echo"test";
             $otpGenerator = new OtpGenerator();
             $otp = $otpGenerator->generate();
             $saveOtp = Otp::create([
