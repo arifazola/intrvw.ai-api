@@ -192,7 +192,7 @@ class AuthController extends Controller
     }
 
     public function validateOtp(Request $request, string $email, string $otp, string $otpFor){
-        $otpFromDb = Otp::where('email', $request->email)->where('otp_for', $otpFor)->firstOrFail();
+        $otpFromDb = Otp::where('email', $request->email)->where('otp_for', $otpFor)->orderBy('valid_until', 'desc')->firstOrFail();
 
         if($otp != $otpFromDb->otp){
             return response()->json([
