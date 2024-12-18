@@ -133,13 +133,32 @@ class AuthController extends Controller
             'email' => $request->email,
             'otp' => $otp,
             'valid_until' => date("Y-m-d H:i:s"),
-            'is_used' => false
+            'is_used' => false,
+            'otp_for' => 'register'
         ]);
 
         AuthController::sendOtp($request->email, $otp);
 
         return response()->json([
             'message' => 'Signup success',
+            'access_token' => "",
+            'token_type' => 'Bearer'
+        ]);
+    }
+
+    public function requestOtpForResetPassword(Request $request){
+        $otp = $otpGenerator->generate();
+        $saveOtp = Otp::create([
+            'email' => $request->email,
+            'otp' => $otp,
+            'valid_until' => date("Y-m-d H:i:s"),
+            'is_used' => false,
+            'otp_for' => 'reset_password'
+        ]);
+        AuthController::sendOtp($request->email, $otp);
+
+        return response()->json([
+            'message' => 'OTP for reset password has been sent to your email',
             'access_token' => "",
             'token_type' => 'Bearer'
         ]);
@@ -160,10 +179,18 @@ class AuthController extends Controller
         ]);
     }
 
-    public function validateOtp(Request $request, string $email, string $otp){
+    public function validateOtp(Request $request, string $email, string $otp, string $otpFor){
         $otpFromDb = Otp::where('email', $request->email)->firstOrFail();
 
         if($otp != $otpFromDb->otp){
+            return response()->json([
+                'message' => 'OTP Invalid',
+                'access_token' => "",
+                'token_type' => 'Bearer'
+            ], 401);
+        }
+
+        if($otpFor != $otpFromDb->otp_for){
             return response()->json([
                 'message' => 'OTP Invalid',
                 'access_token' => "",

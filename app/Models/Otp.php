@@ -18,7 +18,8 @@ class Otp extends Model
         'email',
         'otp',
         'valid_until',
-        'is_used'
+        'is_used',
+        'otp_for'
     ];
 
     /**
