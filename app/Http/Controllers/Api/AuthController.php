@@ -237,7 +237,7 @@ class AuthController extends Controller
                 'token_type' => 'Bearer'
             ]);
         }catch(Exception $e){
-            print($e->getMessage());
+            // print($e->getMessage());
             return response()->json([
                 'message' => 'Something went wrong when updating your password. Please try again',
                 'access_token' => "",
