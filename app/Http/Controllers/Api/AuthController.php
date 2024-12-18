@@ -229,7 +229,7 @@ class AuthController extends Controller
 
     public function updatePassword(Request $request){
         try{
-            $updatePassword = DB::table('users')->where('email', $request->email)->update(['password' => $request->password]);
+            $updatePassword = DB::table('users')->where('email', $request->email)->update(['password' => Hash::make($request->password)]);
 
             return response()->json([
                 'message' => 'Password has been changed. You can now login with your new password',
