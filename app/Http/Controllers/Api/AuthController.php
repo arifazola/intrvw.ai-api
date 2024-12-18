@@ -166,6 +166,7 @@ class AuthController extends Controller
                 'token_type' => 'Bearer'
             ]);
         }catch(Exception $e){
+            print_r($e->getMessage());
             return response()->json([
                 'message' => 'Something went wrong when requesting OTP. Please try again',
                 'access_token' => "",
