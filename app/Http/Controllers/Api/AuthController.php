@@ -233,7 +233,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'message' => 'Password has been changed. You can now login with your new password',
-                'access_token' => $token,
+                'access_token' => "",
                 'token_type' => 'Bearer'
             ]);
         }catch(Exception $e){
