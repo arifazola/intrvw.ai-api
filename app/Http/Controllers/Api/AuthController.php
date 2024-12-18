@@ -169,7 +169,7 @@ class AuthController extends Controller
                 'message' => 'Something went wrong when requesting OTP. Please try again',
                 'access_token' => "",
                 'token_type' => 'Bearer'
-            ]);
+            ], 401);
         }
         
     }
