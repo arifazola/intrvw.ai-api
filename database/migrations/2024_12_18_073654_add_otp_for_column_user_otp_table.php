@@ -12,11 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         //
-        Schema::table('interview_results', function (Blueprint $table) {
-            // $table->integer('votes')->unsigned()->default(1)->comment('my comment')->change();
-            // $table->dropPrimary('interview_results_id_primary');
-            // $table->dropColumn('id');
-            // $table->string('id', 50)->primary();
+        Schema::table('user_otp', function(Blueprint $table){
+            $table->string('otp_for', 50);
         });
     }
 
