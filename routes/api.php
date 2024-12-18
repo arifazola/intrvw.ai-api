@@ -9,6 +9,7 @@ Route::post('/auth', [\App\Http\Controllers\Api\AuthController::class, 'auth']);
 Route::get('/validate-otp/{email}/{otp}/{otpFor}', [\App\Http\Controllers\Api\AuthController::class, 'validateOtp']);
 Route::post('/otp-reset-password', [\App\Http\Controllers\Api\AuthController::class, 'requestOtpForResetPassword']);
 Route::get('/remaining-token/{email}', [\App\Http\Controllers\Api\AuthController::class, 'getCurrentRemainingToken'])->middleware('auth:sanctum');
+Route::post('/update-password', [\App\Http\Controllers\Api\AuthController::class, 'updatePassword']);
 // Route::post('/test-encrypt', [\App\Http\Controllers\Api\AuthController::class, 'testEncrypt']);
 
 

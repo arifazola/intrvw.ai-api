@@ -204,23 +204,43 @@ class AuthController extends Controller
 
         if($otpFor != $otpFromDb->otp_for){
             return response()->json([
-                'message' => 'OTP Invalid',
+                'message' => 'otp Invalid',
                 'access_token' => "",
                 'token_type' => 'Bearer'
             ], 401);
         }
 
-        $updateUser = DB::table('users')->where('email', $email)->update(['email_verified_at' => date("Y-m-d H:i:s")]);
+        if($otpFor == "register"){
+            $updateUser = DB::table('users')->where('email', $email)->update(['email_verified_at' => date("Y-m-d H:i:s")]);
 
-        $user = User::where('email', $email)->firstOrFail();
-
-        $token = $user->createToken('auth_token')->plainTextToken;
+            $user = User::where('email', $email)->firstOrFail();
+    
+            $token = $user->createToken('auth_token')->plainTextToken;
+        }
 
         return response()->json([
             'message' => 'OTP validated',
             'access_token' => $token,
             'token_type' => 'Bearer'
         ]);
+    }
+
+    public function updatePassword(Request $request){
+        try{
+            $updatePassword = DB::table('users')->where('email', $request->email)->update(['password' => $request->password]);
+
+            return response()->json([
+                'message' => 'Password has been changed. You can now login with your new password',
+                'access_token' => $token,
+                'token_type' => 'Bearer'
+            ]);
+        }catch(Exception $e){
+            return response()->json([
+                'message' => 'Something went wrong when updating your password. Please try again',
+                'access_token' => "",
+                'token_type' => 'Bearer'
+            ], 401);
+        }
     }
 
     public function getCurrentRemainingToken(Request $request, string $email){
