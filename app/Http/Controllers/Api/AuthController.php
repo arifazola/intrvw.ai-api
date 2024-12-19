@@ -244,8 +244,7 @@ class AuthController extends Controller
     public function updatePassword(Request $request){
         try{
             $passwordResetToken = DB::table('password_reset_tokens')->select('token')->where('email', $request->email)->get();
-            print_r($passwordResetToken[0]);
-            if($request->token != $passwordResetToken->token){
+            if($request->token != $passwordResetToken[0]->token){
                 return response()->json([
                     'message' => 'Unauthenticated',
                     'access_token' => "",
@@ -260,7 +259,6 @@ class AuthController extends Controller
                 'token_type' => 'Bearer'
             ]);
         }catch(Exception $e){
-            print($e->getMessage());
             return response()->json([
                 'message' => 'Something went wrong when updating your password. Please try again',
                 'access_token' => "",
