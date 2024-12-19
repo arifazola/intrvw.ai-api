@@ -244,7 +244,7 @@ class AuthController extends Controller
     public function updatePassword(Request $request){
         try{
             $passwordResetToken = DB::table('password_reset_tokens')->select('token')->where('email', $request->email)->get();
-            print_r($passwordResetToken);
+            print_r($passwordResetToken[0]);
             if($request->token != $passwordResetToken->token){
                 return response()->json([
                     'message' => 'Unauthenticated',
