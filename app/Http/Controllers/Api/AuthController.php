@@ -216,15 +216,29 @@ class AuthController extends Controller
             $user = User::where('email', $email)->firstOrFail();
     
             $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'message' => 'OTP validated',
+                'access_token' => $token,
+                'token_type' => 'Bearer'
+            ]);
         } else {
-            $token = "";
+            $token = Hash::make($email . time() . "P@ssw0rd");
+            DB::table("password_reset_tokens")->upsert(
+                [
+                    ['email' => $email, 'token' => $token, 'created_at' => date("Y-m-d H:i:s")]
+                ],
+                ['email'],
+                ['token']
+            );
+            return response()->json([
+                'message' => 'OTP validated',
+                'access_token' => $token,
+                'token_type' => 'Bearer'
+            ]);
         }
 
-        return response()->json([
-            'message' => 'OTP validated',
-            'access_token' => $token,
-            'token_type' => 'Bearer'
-        ]);
+        
     }
 
     public function updatePassword(Request $request){
